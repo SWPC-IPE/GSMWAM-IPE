@@ -69,14 +69,11 @@ ifneq ($(need),$(ok))
 $(error Need at least make version $(need).  Load module gmake/3.81)
 endif
 
-NETCDF_ROOT = $(NETCDF)
+NETCDF_ROOT = $(netcdf_c_ROOT)
 INCLUDE = -I$(NETCDF_ROOT)/include
 NETCDF_INC = -I$(NETCDF_ROOT)/include
-ifneq ($(findstring netcdf/4,$(LOADEDMODULES)),)
-  NETCDF_LIB += -L$(NETCDF)/lib -lnetcdff -lnetcdf
-else
-  NETCDF_LIB += -L$(NETCDF)/lib -lnetcdff -lnetcdf
-endif
+NETCDF_LIB += -L$(NETCDF_ROOT)/lib -lnetcdff -lnetcdf
+HDF5_LIB = -L$(HDF5_ROOT)/lib
 
 FPPFLAGS := -fpp -Wp,-w $(INCLUDE)
 CFLAGS := $(INCLUDE)
@@ -148,7 +145,7 @@ FFLAGS_TEST = -O3 -debug minimal -fp-model source -qoverride-limits
 CFLAGS_TEST = -O2
 
 LDFLAGS :=
-LDFLAGS_OPENMP := -qopenmp
+LDFLAGS_OPENMP := -qopenmp -lstdc++ $(HDF5_LIB)
 LDFLAGS_VERBOSE := -Wl,-V,--verbose,-cref,-M
 
 # start with blank LIBS
