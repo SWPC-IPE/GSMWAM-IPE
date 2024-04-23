@@ -1153,6 +1153,7 @@ export SWIO_EDATE=${SWIO_EDATE:0:8}_${SWIO_EDATE:8}
 if [ $IDEA = .true. ]; then
   ${NLN} $COMOUT/wam_fields_${CDATE}_${cycle}.nc $DATA/wam_fields.nc
   ${NLN} $COMOUT/input_parameters.${CDATE}.${cycle}.nc $DATA/input_parameters.nc
+  ${NLN} $COMOUT/dt6dt.nc $DATA/dt6dt.nc
 
   export START_UT_SEC=$((10#$INI_HOUR*3600))
   export END_TIME=$((IPEFMAX+$START_UT_SEC))
