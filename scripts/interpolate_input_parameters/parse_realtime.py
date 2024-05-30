@@ -9,7 +9,6 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from collections import defaultdict
 from math import exp
 import glob
-from matplotlib import pyplot as plt
 from collections import OrderedDict as od
 from netCDF4 import Dataset, date2num
 import traceback
@@ -42,7 +41,7 @@ EDATE = '999901010000'
 F10_TIME_DELTA = timedelta(minutes=8*60) # we are moving from 12 UT -> 20 UT, the obs time
 KP_TIME_DELTA = timedelta(minutes=90) # middle of the Kp window
 F10_JUMP_LIMIT = 35
-F10A_JUMP_LIMIT = F10_JUMP_LIMIT/41
+F10A_JUMP_LIMIT = F10_JUMP_LIMIT/41*3
 
 def backwards_search(dict,search_time,relax_func):
     # relax_func takes an argument of the current time
@@ -325,26 +324,10 @@ class InputParameters(object):
                 self.fwam_date = dt
             except:
                 pass
-        print('F107')
-        for k,v in f107.items():
-            if v:
-                print(k,v)
-        print('F107a')
-        for k,v in f107a.items():
-            if v:
-                print(k,v)
 
         self.clean_f10(f107, F10_JUMP_LIMIT)
         self.clean_f10(f107a, F10A_JUMP_LIMIT)
 
-        print('F107')
-        for k,v in f107.items():
-            if v:
-                print(k,v)
-        print('F107a')
-        for k,v in f107a.items():
-            if v:
-                print(k,v)
         # and interpolate them
         f107  = self.linear_int_missing_vals(f107,  self.f107.backwards_search)
         f107a = self.linear_int_missing_vals(f107a, self.f107a.backwards_search)
@@ -460,12 +443,20 @@ def main():
     parser.add_argument('-f', '--egeo_date',  help='end date of geospace-input (YYYYmmddHHMM)', type=str, default=EDATE)
     parser.add_argument('-g', '--eaur_date',  help='end date of aurora_power (YYYYmmddHHMM)',   type=str, default=EDATE)
     parser.add_argument('-r', '--derive',     help='derive IMF, SW, HP from Kp', default=False, action='store_true')
+    parser.add_argument('-i', '--input_file', type=str, default=None)
     args = parser.parse_args()
 
     start_date = datetime.strptime(args.start_date,'%Y%m%d%H%M')
     ewam_date  = datetime.strptime(args.ewam_date, '%Y%m%d%H%M')
     egeo_date  = datetime.strptime(args.egeo_date, '%Y%m%d%H%M')
     eaur_date  = datetime.strptime(args.eaur_date, '%Y%m%d%H%M')
+
+    if args.input_file:
+        nc_fid = Dataset(args.input_file)
+        ewam_date = datetime.strptime(nc_fid.final_swfo_f10_kp_date, '%Y%m%d_%H%M%S')
+        egeo_date = datetime.strptime(nc_fid.final_imf_date, '%Y%m%d_%H%M%S')
+        eaur_date = datetime.strptime(nc_fid.final_aurora_power_date, '%Y%m%d_%H%M%S')
+        nc_fid.close()
 
     ip = InputParameters(start_date, args.duration, args.path, args.output,
                          args.append, args.coupled, ewam_date, egeo_date,
