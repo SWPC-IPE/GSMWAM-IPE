@@ -1187,6 +1187,11 @@ if [ $IDEA = .true. ]; then
        echo "failed, no f107 file" ; exit 1
     fi
   fi
+
+  if [ $DYNAMIC_SKEDDY0 = .true. ] ; then
+    while read line; do export $line ; done < <($BASE_NEMS/../scripts/interpolate_input_parameters/skeddy0_from_f107a.py)
+  fi
+
   LEN_F107=`wc -l wam_input_f107_kp.txt | cut -d' ' -f 1`
   F107_KP_SIZE=$((LEN_F107-5))
   F107_KP_DATA_SIZE=$F107_KP_SIZE
