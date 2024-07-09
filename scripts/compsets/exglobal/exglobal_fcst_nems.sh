@@ -1160,7 +1160,7 @@ if [ $IDEA = .true. ]; then
   if [ $INPUT_PARAMETERS = realtime ] ; then
     $BASE_NEMS/../scripts/interpolate_input_parameters/parse_realtime.py -s $($MDATE -$((36*60)) ${FDATE}00) \
                                                                          -d $((60*(36+ 10#$FHMAX - 10#$FHINI))) \
-                                                                         -p $DCOM
+                                                                         -p $DCOM $REALTIME_DERIVE
   elif [ $INPUT_PARAMETERS = conops2 ] ; then
     start=$($MDATE -$((36*60)) ${FDATE}00)
     duration=$((2160+15))
@@ -1177,7 +1177,11 @@ if [ $IDEA = .true. ]; then
     echo "$FIX_SWBZ"   >> temp_fix
     echo "$FIX_GWATTS" >> temp_fix
     echo "$FIX_HPI"    >> temp_fix
-    $BASE_NEMS/../scripts/interpolate_input_parameters/interpolate_input_parameters.py -d $((36+ 10#$FHMAX - 10#$FHINI)) -s `$NDATE -36 $FDATE` -p $PARAMETER_PATH -m $INPUT_PARAMETERS -f temp_fix
+    $BASE_NEMS/../scripts/interpolate_input_parameters/interpolate_input_parameters.py -d $((36+ 10#$FHMAX - 10#$FHINI)) \
+                                                                                       -s $($NDATE -36 $FDATE) \
+                                                                                       -p $PARAMETER_PATH \
+                                                                                       -m $INPUT_PARAMETERS \
+                                                                                       -f temp_fix $HISTORICAL_NEW_F107
     rm -rf temp_fix
     if [ ! -e input_parameters.nc ] ; then
        echo "failed, no f107 file" ; exit 1
