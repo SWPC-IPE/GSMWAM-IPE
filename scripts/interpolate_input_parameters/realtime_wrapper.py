@@ -5,6 +5,7 @@ from time import sleep
 from glob import glob
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from netCDF4 import Dataset
+from traceback import format_exc
 
 SLEEP_TIME = 60
 DEFAULT_VAR = 'f107'
@@ -28,7 +29,10 @@ def latest_date(path):
     hp_files.sort(reverse=True)
 
     sw_date = get_sw_date(sw_files[0].split('/')[-1])
-    hp_date = get_hp_date(open(hp_files[0], 'r'))
+    try:
+        hp_date = get_hp_date(open(hp_files[0], 'r'))
+    except:
+        hp_date = sw_date - timedelta(days=1)
 
     return min(sw_date, hp_date)
 
@@ -71,12 +75,10 @@ def main():
 
     driver_end_date = datetime.strptime(prt.EDATE, '%Y%m%d%H%M')
 
-    ip = prt.InputParameters(current_date, args.duration, args.path, args.output, True, True, *[driver_end_date]*3)
-    ip.parse()
-
     while current_date < end_date:
         if latest_date(args.path) >= target_date or proceed(target_date):
             try:
+                ip = prt.InputParameters(current_date, args.duration, args.path, args.output, True, True, *[driver_end_date]*3)
                 ip.date_list   = [ current_date + timedelta(minutes=x) for x in range(args.duration+prt.MAX_WAIT)  ]
                 ip.output_list = [ current_date + timedelta(minutes=x) for x in range(args.duration) ]
                 # parse
@@ -91,7 +93,7 @@ def main():
                 current_date += timedelta(minutes=args.duration)
                 target_date  += timedelta(minutes=args.duration)
             except Exception as e:
-                print(e)
+                print(format_exc())
                 pass
         else:
             sleep(SLEEP_TIME)
