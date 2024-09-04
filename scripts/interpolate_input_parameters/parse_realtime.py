@@ -356,7 +356,7 @@ class InputParameters(object):
         header_formats = ['{:<20}','{:>12}','{:>12}','{:>12}','{:>12}','{:>12}','{:>12}',\
                           '{:>12}','{:>12}','{:>12}','{:>12}','{:>12}','{:>12}','{:>12}','{:>12}','{:>12}\n']
         output_formats = ['{:<20}','{:>12.7f}','{:>12.7f}','{:>12}','{:>12}','{:>12.7f}','{:>12.7f}',\
-                          '{:>12.7f}','{:>12}','{:>12.7f}','{:>12}','{:>12.7f}','{:>12.7f}','{:>12.7f}','{:>12.7f}','{:>12.7f}\n']
+                          '{:>12.7f}','{:>12}','{:>12.7f}','{:>12}','{:>12.7f}','{:>12.7f}','{:>13.7f}','{:>12.7f}','{:>12.7f}\n']
         fields = lambda k: [k.strftime(WAM_INPUT_FMT),self.f107.dict[k],self.kp.dict[k],'2','1',self.f107a.dict[k],\
                             self.kpa.dict[k],self.hpn.dict[k],self.hpin.dict[k],self.hps.dict[k],self.hpis.dict[k],\
                             self.swbt.dict[k],self.swang.dict[k],self.swveo.dict[k],self.swbzo.dict[k],self.swdeo.dict[k]]
