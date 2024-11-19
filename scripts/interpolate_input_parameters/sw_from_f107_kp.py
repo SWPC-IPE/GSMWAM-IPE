@@ -50,8 +50,8 @@ def swbz_calc(Esw,vel):
 def hemi_pow_calc(kp):
   return 1.29 + 15.60*kp - 4.93*kp**2 + 0.64*kp**3
 
-def calc_solar_data(kp,f107):
-  mylen = len(f107)
+def calc_solar_data(kp):
+  mylen = len(kp)
   swesw    = numpy.ones(mylen)
   swbt     = numpy.ones(mylen)
   swangle  = numpy.ones(mylen)
@@ -60,7 +60,7 @@ def calc_solar_data(kp,f107):
   swbz     = numpy.ones(mylen)
   hemi_pow = numpy.ones(mylen)
   hemi_pow_idx = numpy.ones(mylen)
-  for i in range(len(f107)):
+  for i in range(len(kp)):
     swesw[i]        = swesw_calc(kp[i])
     swbt[i]         = swbt_calc(swbz[i],swby_calc())
     hemi_pow[i]     = hemi_pow_calc(kp[i])
