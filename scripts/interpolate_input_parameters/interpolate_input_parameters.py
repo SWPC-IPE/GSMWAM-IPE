@@ -141,6 +141,31 @@ def get_f107_new(path, dates):
     f107a = running_average(f107, 41)
     return interpolate(np.array(f107), MINS_PER_F107_SEGMENT), interpolate(np.array(f107a), MINS_PER_F107_SEGMENT)
 
+
+KP_IDATE = datetime(1932, 1, 1, 0, 0)
+KP_DB_FILENAME = 'kp_ap_19320101-2024.nc'
+def get_kp_time_index(td):
+    return td.days * 8
+
+def get_kp_new(path, dates):
+    idxs = [get_kp_time_index(datetime.strptime(date, '%Y%m%d%H')-KP_IDATE) for date in dates]
+
+    ap = []
+    try:
+        ap_db = Dataset('{}/KP_AP/{}'.format(path, KP_DB_FILENAME))
+        for idx in idxs:
+            ap.extend(ap_db.variables['Ap'][idx:idx+8])
+
+        apa   = running_average(ap, 8)
+        ap, apa = interpolate(np.array(ap), MINS_PER_KP_SEGMENT), interpolate(np.array(apa), MINS_PER_KP_SEGMENT)
+        kp, kpa = kp_from_ap(ap, apa)
+
+    except Exception as e:
+        print(e)
+        failure('kpnew read')
+
+    return kp, kpa
+
 def get_kp_f107(path, dates):
     ## start: YYYYMMDDHH string for starting date
     ## end:   YYYYMMDDHH string for ending date
@@ -156,14 +181,13 @@ def get_kp_f107(path, dates):
     except Exception as e:
         print(e)
         failure('yearly kp_ap database read')
+
     # return the interpolated values
     f107a = running_average(f107, 41)
     kpa   = running_average(kp, 8)
 
     ap, apa = ap_from_kp(kp, kpa)
-
     ap, apa = interpolate(np.array(ap), MINS_PER_KP_SEGMENT), interpolate(np.array(apa), MINS_PER_KP_SEGMENT)
-
     kp, kpa = kp_from_ap(ap, apa)
 
     return kp, kpa, interpolate(np.array(f107), MINS_PER_F107_SEGMENT), interpolate(np.array(f107a), MINS_PER_F107_SEGMENT)
@@ -254,9 +278,11 @@ def parse(args, end_date):
         kp_offset     = time_diff(start_date+'00', hourless(min_f107) + KP_MIDPOINT_STRING)
         f107_offset   = time_diff(start_date+'00', hourless(min_f107) + F107_MIDPOINT_STRING)
         kp_avg_offset = kp_offset # time_diff(args.start_date+'00', hourless(min_f107) + '0000')
-        kp, kp_avg, f107, f107a = get_kp_f107(args.path, get_dates(min_f107, max_f107))
-        if args.new_f107:
+        if args.new_driver_db:
             f107, f107a = get_f107_new(args.path, get_dates(min_f107, max_f107))
+            kp, kp_avg  = get_kp_new(  args.path, get_dates(min_f107, max_f107))
+        else:
+            kp, kp_avg, f107, f107a = get_kp_f107(args.path, get_dates(min_f107, max_f107))
 #        kp_avg          = get_24hr_kp_avg(get_dates(start_date,end_date))
     else: # fixed kp/f107
         kp_offset     = 0
@@ -325,7 +351,7 @@ def txt_output(args, file, kp, f107, f107a, kpa, swbt, swangle, swvel, swden, sw
                      hemi_pow_idx[i], swbt[i], swang[i], swveo[i], swbzo[i], swdeo[i]))
 
     for i in range(len(kp),args.duration*60+flip):
-        f.write("{0}{1:>12.7f}{2:>12.7f}{3:>12}{4:>12}{5:>12.7f}{6:>12.7f}{7:>12.7f}{8:>12}{9:>12.7f}{10:>12}{11:>12.7f}{12:>12.7f}{13:>12.7f}{14:>12.7f}{15:>12.7f}\n".format( \
+        f.write("{0}{1:>12.7f}{2:>12.7f}{3:>12}{4:>12}{5:>12.7f}{6:>12.7f}{7:>12.7f}{8:>12}{9:>12.7f}{10:>12}{11:>12.7f}{12:>12.7f}{13:>13.7f}{14:>12.7f}{15:>12.7f}\n".format( \
                  output_timestamp(date[0],i), f107[-1], kp[-1], '2', '1',
                  f107a[-1], kpa[-1], hemi_pow[-1], hemi_pow_idx[-1], hemi_pow[-1],
                  hemi_pow_idx[-1], swbt[-1], swang[-1], swveo[-1], swbzo[-1], swdeo[-1]))
@@ -419,7 +445,7 @@ def main():
     parser.add_argument('-m', '--mode', help='timeobs (time-varying from obs), timederive (time-varying kp/f10.7, derived solar wind drivers), '+\
                                          'fixderive (fixed kp/f10.7, derived solar wind drivers), or fixall (everything fixed)', type=str, default='timeobs')
     parser.add_argument('-f', '--fixed', help='full path to file containing fixed data for run', type=str, default='')
-    parser.add_argument('-n', '--new_f107',   help='use new F10.7 database', default=False, action='store_true')
+    parser.add_argument('-n', '--new_driver_db',   help='use new F10.7 and Kp databases', default=False, action='store_true')
 
     args = parser.parse_args()
 
