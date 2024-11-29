@@ -9,7 +9,6 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from collections import defaultdict
 from math import exp
 import glob
-from matplotlib import pyplot as plt
 from collections import OrderedDict as od
 from netCDF4 import Dataset, date2num
 import traceback

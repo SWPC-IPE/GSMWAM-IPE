@@ -1050,12 +1050,13 @@ while [[ $NEMS = .true. ]] && [[ 10#$FH -le $FHMAX ]] ; do
 done
 # IPE
 if [[ $IPE = .true. ]] ; then
+  mkdir -p output
   export CIPEDATE=${CIPEDATE:-$CDATE${IPEMINUTES:-00}}
   STEPS=$(((10#$FHMAX-10#$FHINI)*60*60/IPEFREQ))
   STEP=1
   while [[ $STEP -le $STEPS ]] ; do
     TIMESTAMP=`$MDATE $((STEP*IPEFREQ/60)) $CIPEDATE`
-    eval $NLN ${COMOUT}/${PLASO} ${PLASO}
+    eval $NLN /u/$USER/IPE.h5 output/${PLASO}
     STEP=$((STEP+1))
   done
 fi
@@ -1152,6 +1153,7 @@ export SWIO_EDATE=${SWIO_EDATE:0:8}_${SWIO_EDATE:8}
 #--------------------------------------------------------------
 if [ $IDEA = .true. ]; then
   ${NLN} $COMOUT/wam_fields_${CDATE}_${cycle}.nc $DATA/wam_fields.nc
+  ${NLN} $COMOUT/input_parameters.${CDATE}.${cycle}.nc $DATA/input_parameters.nc
 
   export START_UT_SEC=$((10#$INI_HOUR*3600))
   export END_TIME=$((IPEFMAX+$START_UT_SEC))
@@ -1159,7 +1161,11 @@ if [ $IDEA = .true. ]; then
   if [ $INPUT_PARAMETERS = realtime ] ; then
     $BASE_NEMS/../scripts/interpolate_input_parameters/parse_realtime.py -s $($MDATE -$((36*60)) ${FDATE}00) \
                                                                          -d $((60*(36+ 10#$FHMAX - 10#$FHINI))) \
-                                                                         -p $DCOM
+                                                                         -p $DCOM $REALTIME_DERIVE
+  elif [ $INPUT_PARAMETERS = ccmc ] ; then
+    $BASE_NEMS/../scripts/interpolate_input_parameters/ccmc_drivers.py -s $($MDATE -$((36*60)) ${FDATE}00) \
+                                                                       -d $((60*(36+ 10#$FHMAX - 10#$FHINI))) \
+                                                                       -p $CCMC_DRIVER_PATH
   elif [ $INPUT_PARAMETERS = conops2 ] ; then
     start=$($MDATE -$((36*60)) ${FDATE}00)
     duration=$((2160+15))
@@ -1176,7 +1182,11 @@ if [ $IDEA = .true. ]; then
     echo "$FIX_SWBZ"   >> temp_fix
     echo "$FIX_GWATTS" >> temp_fix
     echo "$FIX_HPI"    >> temp_fix
-    $BASE_NEMS/../scripts/interpolate_input_parameters/interpolate_input_parameters.py -d $((36+ 10#$FHMAX - 10#$FHINI)) -s `$NDATE -36 $FDATE` -p $PARAMETER_PATH -m $INPUT_PARAMETERS -f temp_fix
+    $BASE_NEMS/../scripts/interpolate_input_parameters/interpolate_input_parameters.py -d $((36+ 10#$FHMAX - 10#$FHINI)) \
+                                                                                       -s $($NDATE -36 $FDATE) \
+                                                                                       -p $PARAMETER_PATH \
+                                                                                       -m $INPUT_PARAMETERS \
+                                                                                       -f temp_fix $HISTORICAL_NEW_F107
     rm -rf temp_fix
     if [ ! -e input_parameters.nc ] ; then
        echo "failed, no f107 file" ; exit 1
@@ -1353,6 +1363,8 @@ $ERRSCRIPT||exit 2
  if [ $DOIAU = YES ]; then
     eval $CHGSFCFHREXEC $SFCI $CDATE_SFC $FHINI_SFC
  fi
+
+mv /u/$USER/IPE.h5 $COMOUT/`eval echo "$PLASO"`
 
 [[ -f $COMOUT/`eval echo "$PLASO"` ]] && eval ln -fs ${COMOUT}/${PLASO} $IPER
 

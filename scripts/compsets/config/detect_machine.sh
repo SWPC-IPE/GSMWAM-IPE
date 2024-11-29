@@ -11,6 +11,9 @@ elif [[ -e /xcatpost && -e /scratch1 && -e /scratch2 ]] ; then
 elif [[ -e /glade ]] ; then
     export FMID=cheyenne
     export MACHINE=cheyenne
+elif [[ -e /nasa ]] ; then
+    export FMID=pleiades
+    export MACHINE=pleiades
 else
     # cannot ID machine
     echo "cannot identify current machine... check config/detect_machine"

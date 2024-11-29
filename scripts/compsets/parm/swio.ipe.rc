@@ -19,10 +19,10 @@ import_fields::
 #   NO_plus_density
 #   O2_plus_density
 #   N2_plus_density
-#   O_plus_2D_density
-#   O_plus_2P_density
-#   ion_temperature
-#   electron_temperature
+    O_plus_2D_density
+    O_plus_2P_density
+    ion_temperature
+    electron_temperature
     electron_density
     eastward_exb_velocity
     northward_exb_velocity
@@ -37,8 +37,19 @@ import_fields::
 #
 #  <import_field_name>    [<output_variable_name>]
 output_fields::
+    O_plus_density
+    H_plus_density
+    He_plus_density
+    O_plus_2D_density
+    O_plus_2P_density
+    ion_temperature
+    electron_temperature
+    electron_density
+    eastward_exb_velocity
+    northward_exb_velocity
+    upward_exb_velocity
 ::
-
+#### Jack Wang Note on 06/25/2024: '::' represents end of input/output. 
 #
 #  Computed fields
 #

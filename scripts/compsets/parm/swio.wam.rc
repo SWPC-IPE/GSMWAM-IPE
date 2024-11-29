@@ -57,7 +57,7 @@ import_mask_field: temp_neutral 0.0 -99999.
 #  Note that <scaling_factor> is optional as it may or may not be used depending on the function
 #
 compute_fields::
-    column_interpolate  thermosphere_mass_density    height    400000.    iss_mass_density    "kg m-3"
+    column_interpolate  thermosphere_mass_density    height    400000.    mass_density_400km    "kg m-3"
     column_o_n2_ratio   O_Density    N2_Density    temp_neutral    height    2.e+21    o_n2_ratio    "1"
 ::
 #

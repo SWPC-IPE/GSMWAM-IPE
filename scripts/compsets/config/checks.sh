@@ -200,19 +200,20 @@ if [ $IPE = .true. ] ; then
 	echo "looking for IPE initial conditions"
 	# if user has not defined CIPEDATE, RESTART=.false. and $CDATE is good
 	export CIPEDATE=${CIPEDATE:-$CDATE${IPE_MINUTES:-00}}
-	IPESEARCH="${IPEBASESEARCH}${CIPEDATE}.h5"
-	export PLASI=${PLASI:-$ROTDIR/$IPESEARCH}
+	IPESEARCH="${IPEBASESEARCH}.h5"
+	IPEFNAME="${IPEBASESEARCH}${CIPEDATE}.h5"
+	export PLASI=${PLASI:-$ROTDIR/$IPEFNAME}
 	echo "searching ROTDIR, then RESTARTDIR, then IPE_IC_DIR for $IPESEARCH"
 	# then we search ROTDIR, then RESTARTDIR, then IPE_IC_DIR
-	if [[ -f `find -L $ROTDIR -maxdepth 1 -type f -iname "$IPESEARCH" | head -1` ]] ; then
+	if [[ -f `find -L $ROTDIR -maxdepth 1 -type f -iname "$IPEFNAME" | head -1` ]] ; then
 		echo "   found in ROTDIR"
 	elif [[ -f `find -L $RESTARTDIR -maxdepth 1 -type f -iname "$IPESEARCH" | head -1` ]] ; then
 		echo "   found in RESTARTDIR, copying to ROTDIR"
-		$NCP $RESTARTDIR/$IPESEARCH $ROTDIR
+		$NCP $RESTARTDIR/$IPESEARCH $ROTDIR/$IPEFNAME
 	# IPE_IC_DIR has been defaulted to IC_DIR if IC_DIR is defined
 	elif [ -n ${IPE_IC_DIR} ] && [[ -f `find -L $IPE_IC_DIR -type f -iname "$IPESEARCH" | head -1` ]] ; then
 		echo "   found in IPE_IC_DIR, copying to ROTDIR"
-		$NCP $IPE_IC_DIR/$IPESEARCH $ROTDIR
+		$NCP $IPE_IC_DIR/$IPESEARCH $ROTDIR/$IPEFNAME
 	else # can't find any matching IPE initial conditions
 		echo "   can't find your IPE files... check the filename convention! exiting." ; exit 1
 	fi
