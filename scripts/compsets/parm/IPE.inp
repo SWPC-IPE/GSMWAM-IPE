@@ -23,6 +23,8 @@
  WRITE_APEX_NEUTRALS       = T,
  WRITE_GEOGRAPHIC_NEUTRALS = T,
  FILE_OUTPUT_FREQUENCY     = ${IPEFREQ}.0D0
+ FILE_PREFIX               = ${IPE_FILE_PREFIX},
+ FILE_EXTENSION            = ${IPE_FILE_EXTENSION}
 /
 &ipecap
   mesh_height_min = 0.

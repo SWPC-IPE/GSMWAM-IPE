@@ -9,7 +9,7 @@
   spectral_loop=$SPECTRAL_LOOP, explicit=$EXPLICIT,
   ndslfv=$NDSLFV,mass_dp=$MASS_DP,process_split=$PROCESS_SPLIT,
   reduced_grid=$REDUCED_GRID,lsidea=$IDEA,
-  wam_ipe_coupling=$WAM_IPE_COUPLING,
+  wam_ipe_coupling=$ANY_COUPLING,
   height_dependent_g=$HEIGHT_DEPENDENT_G,
   semi_implicit_temp_profile=$SEMI_IMPLICIT_TEMP_PROFILE,
   thermodyn_id=$THERMODYN_ID, sfcpress_id=$SFCPRESS_ID,
