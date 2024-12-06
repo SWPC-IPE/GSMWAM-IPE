@@ -254,7 +254,8 @@ class InputParameters(object):
             f10_time = day + F10_TIME_DELTA
             idx = (day - self.gpi_init).days
 
-            f107d[f10_time] = nc_fid.variables['f107d'][idx]
+            if nc_fid.variables['f107d'][idx] > 0:
+                f107d[f10_time] = nc_fid.variables['f107d'][idx]
             f107a[f10_time] = nc_fid.variables['f107a'][idx]
             for i in range(8):
                 ap[day+timedelta(minutes=3*60*i)+KP_TIME_DELTA] = self.ap_from_kp(nc_fid.variables['kp'][idx,i])
