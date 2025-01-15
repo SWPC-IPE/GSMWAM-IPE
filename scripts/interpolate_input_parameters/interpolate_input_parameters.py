@@ -245,12 +245,11 @@ def txt_output(file, kp, f107, f107d, kpa, swbt, swangle, swvel, swbz, hemi_pow,
 
     swbzo = running_average(swbz)
     swbyo = running_average(swby)
-    swbxo = np.zeros(len(swby)) # running_average(swbx)
     swdeo = running_average(swden)
     swveo = running_average(swvel)
     print(swbyo, swbzo)
     swang = swang_calc(swbyo, swbzo)
-    swbt  = swbt_calc(swbyo, swbzo, swbxo)
+    swbt  = swbt_calc(swbyo, swbzo)
 
     f = open(file,'w')
     f.write('Issue Date          \n')
@@ -329,11 +328,10 @@ def netcdf_output(file, kp, f107, f107d, kp_avg, swbt, swangle, swvel, swbz, hem
 
   swbzo = running_average(swbz)
   swbyo = running_average(swby)
-  swbxo = np.zeros(len(swby)) # running_average(swbx)
   swdeo = running_average(swden)
   swveo = running_average(swvel)
   swang = swang_calc(swbyo, swbzo)
-  swbt  = swbt_calc(swbyo, swbzo, swbxo)
+  swbt  = swbt_calc(swbyo, swbzo)
 
   _mode = 'w'
 
