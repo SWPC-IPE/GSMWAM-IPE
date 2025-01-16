@@ -23,8 +23,8 @@ def hpi_from_gw(gw):
   else:
     return '10'
 
-def swbt_calc(swbz,swby,swbx=0):
-  return numpy.sqrt(swbz**2+swby**2+swbx**2)
+def swbt_calc(swbz,swby):
+  return numpy.sqrt(swbz**2+swby**2)
 
 def swden_calc(): # this isn't used?
   return 5.0
@@ -34,6 +34,8 @@ def swvel_calc(kp):
 
 def swesw_calc(kp):
   return 0.1455+0.4675*kp-0.1446*kp**2+0.0276*kp**3
+# below is the upper quartile Esw relationship, above median
+#  return 0.3387+0.9087*kp-0.2884*kp**2+0.0513*kp**3
 
 def swang_calc(by,bz):
   ang = numpy.arctan2(by,bz)/math.pi*180
@@ -48,8 +50,8 @@ def swbz_calc(Esw,vel):
 def hemi_pow_calc(kp):
   return 1.29 + 15.60*kp - 4.93*kp**2 + 0.64*kp**3
 
-def calc_solar_data(kp,f107):
-  mylen = len(f107)
+def calc_solar_data(kp):
+  mylen = len(kp)
   swesw    = numpy.ones(mylen)
   swbt     = numpy.ones(mylen)
   swangle  = numpy.ones(mylen)
@@ -58,7 +60,7 @@ def calc_solar_data(kp,f107):
   swbz     = numpy.ones(mylen)
   hemi_pow = numpy.ones(mylen)
   hemi_pow_idx = numpy.ones(mylen)
-  for i in range(len(f107)):
+  for i in range(len(kp)):
     swesw[i]        = swesw_calc(kp[i])
     swbt[i]         = swbt_calc(swbz[i],swby_calc())
     hemi_pow[i]     = hemi_pow_calc(kp[i])

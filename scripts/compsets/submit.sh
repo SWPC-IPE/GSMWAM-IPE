@@ -116,6 +116,13 @@ else
     python $SCRIPTSDIR/plot/timepet_plot.py -i ${PLOT_DIR}/${JOBNAME}/${CONFIG} -d ${CDATE} -t $DELTIM
     submit_plots
   fi
+
+fi
+
+if [[ ${DO_POST_WAM:-"NO"} = "YES" ]] ; then
+    cd $POSTDIR
+    export INPUT_PATH=$ROTDIR
+    python convert.py $ROTDIR/input_parameters.${CDATE}.${cycle}.nc
 fi
 
 exit $status
